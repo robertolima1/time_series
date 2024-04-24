@@ -26,7 +26,7 @@ cor(dataset)
 plot_ts(x = 1:length(dataset$V1), y = dataset$V1)
 plot_ts(x = 1:length(dataset$V2), y = dataset$V2)
 ggplot(dataset, aes(x=dataset$V1, y=dataset$V2)) +  geom_point()
-
+dataset <- dataset[(dataset[1]<15) & (dataset[2] <15),]
 #n <- 100  # size of each segment
 #serie1 <- c(sin((1:n)/pi), 2*sin((1:n)/pi), 10 + sin((1:n)/pi),
 #            10-10/n*(1:n)+sin((1:n)/pi)/2, sin((1:n)/pi)/2)
@@ -47,17 +47,17 @@ plot_ts(x = 1:length(dataset$V1), y = dataset$V1)
 plot_ts(x = 1:length(dataset$V2), y = dataset$V2)
 
 
-auto <- autoenc_encode(10, 2)
+auto <- autoenc_encode(10, 1)
 auto <- fit(auto, dataset_ts)
 result <- transform(auto, dataset_ts)
-result_series = as.data.frame(result)
+result_series = data.frame("RESULT" = result,  "event" = rep(FALSE, length(result)))
 
 
 #Aplicando Método Page Hinkley
 model <- fit(hcd_page_hinkley(threshold=1), result_series)
 detection <- detect(model, result_series)
 print(detection[(detection$event),])
-grf <- har_plot(model, result_series$V2, detection)
+grf <- har_plot(model, result_series$RESULT, detection)
 grf <- grf + ggplot2::ylab("value")
 grf <- grf
 plot(grf)
@@ -69,7 +69,7 @@ model <- fit(model, result_series)
 detection <- detect(model, result_series)
 print(detection[(detection$event),])
 
-grf <- har_plot(model, result_series$V2, detection)
+grf <- har_plot(model, result_series$RESULT, detection)
 grf <- grf + ggplot2::ylab("value")
 grf <- grf
 plot(grf)
